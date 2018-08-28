@@ -37,29 +37,29 @@
         </div>
         <input v-else class="vue-tree-input" type="text" ref="nodeInput" :value="model.name" @input="updateName" @blur="setUnEditable">
         <div class="operation" v-show="isHover">
-          <span title="add tree node" @click.stop.prevent="addChild(false)" v-if="!model.isLeaf">
+          <span title="新建用例集" @click.stop.prevent="addChild(false)" v-if="hideFolderIcon">
             <slot name="addTreeNode">
               <i class="vue-tree-icon icon-folder-plus-e"></i>
             </slot>
           </span>
-          <span title="add tree node" @click.stop.prevent="addChild(true)" v-if="!model.isLeaf">
+          <span title="新建用例" @click.stop.prevent="addChild(true)" v-if="hideFileIcon">
             <slot name="addLeafNode">
               <i class="vue-tree-icon icon-plus"></i>
             </slot>
           </span>
-          <span title="edit" @click.stop.prevent="setEditable">
+          <span title="重命名" @click.stop.prevent="setEditable" v-if="hideEditDeleteIcon">
             <slot name="edit">
               <i class="vue-tree-icon icon-edit"></i>
             </slot>
           </span>
-          <span title="delete" @click.stop.prevent="delNode">
+          <span title="删除" @click.stop.prevent="delNode" v-if="hideEditDeleteIcon">
             <slot name="edit">
               <i class="vue-tree-icon icon-trash"></i>
             </slot>
           </span>
         </div>
       </div>
-
+<!-- class="border bottom"-->
       <div v-if="model.children && model.children.length > 0 && expanded"
         class="border bottom"
         :class="{'active': isDragEnterBottom}"
@@ -91,8 +91,8 @@
       return {
         isHover: false,
         editable: false,
-        isDragEnterUp: false,
-        isDragEnterBottom: false,
+        isDragEnterUp: true,
+        isDragEnterBottom: true,
         isDragEnterNode: false,
         expanded: true
       }
@@ -122,6 +122,17 @@
       isFolder() {
         return this.model.children &&
           this.model.children.length
+      },
+      hideFolderIcon(){
+        var value = this.model.parent.parent ? false : true
+        return !this.model.isLeaf && value
+      },
+      hideFileIcon(){
+        var value = this.model.parent.parent ? true: false
+        return !this.model.isLeaf && value
+      },
+      hideEditDeleteIcon(){
+         return this.model.parent.parent ? true: false
       }
     },
     mounted () {
@@ -335,7 +346,7 @@
       background-color: transparent;
     }
     &.active {
-      border-bottom: 3px dashed blue;
+      border-bottom: 1px transparent;
       /*background-color: blue;*/
     }
   }
